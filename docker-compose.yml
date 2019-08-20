@@ -1,0 +1,22 @@
+version: '2.3'
+services:
+  back:
+    build: .
+    volumes:
+    - ./server:/usr/src/app
+    restart: always
+    environment:
+      - MODE=dev
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+  db:
+    restart: always
+    image: postgres:latest
+    ports:
+      - 5432
+    environment:
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_USER: toystore
+      POSTGRES_DB: toystore
