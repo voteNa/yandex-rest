@@ -10,6 +10,7 @@ app = connex_app.app
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+application = app
 
 import src.entities
 if __name__ == '__main__':
