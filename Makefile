@@ -22,5 +22,5 @@ down:
 .PHONY: migrate
 migrate:
 	${DC} exec -T ${CONTAINER} sh -c "flask db init  || true"
-	${DC} exec -T ${CONTAINER} sh -c "flask db migrate"
-	${DC} exec -T ${CONTAINER} sh -c "flask db upgrade"
+	${DC} exec -T ${CONTAINER} sh -c "flask db migrate || true"
+	${DC} exec -T ${CONTAINER} sh -c "flask db upgrade || true"
