@@ -6,7 +6,7 @@ services:
     - ./server:/usr/src/app
     restart: always
     environment:
-      - MODE=dev
+      - MODE=prod
     ports:
       - 8080:8080
     depends_on:
