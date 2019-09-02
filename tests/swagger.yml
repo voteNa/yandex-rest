@@ -1,0 +1,347 @@
+openapi: 3.0.1
+
+info:
+  title: API Yandex
+  version: "1.0"
+
+paths:
+  /imports:
+    post:
+      operationId: "import_post"
+      tags:
+        - import
+      summary: Создание импорта
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                citizens:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Citizen'
+      responses:
+        201:
+          description: Успешный импорт
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      import_id:
+                        type: integer
+        400:
+          description: Ошибка валидации данных
+      x-openapi-router-controller: src.controllers.import_controller
+  /imports/{import_id}/citizens/{citizen_id}:
+    patch:
+      tags:
+        - citizen
+      summary: Метод редактирования гражданина
+      operationId: citizen_patch
+      parameters:
+        - name: import_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+
+        - name: citizen_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                town:
+                  type: string
+                  maxLength: 256
+                  minLength: 1
+                street:
+                  type: string
+                  maxLength: 256
+                  minLength: 1
+                building:
+                  type: string
+                  maxLength: 256
+                  minLength: 1
+                apartment:
+                  type: integer
+                  minimum: 0
+                name:
+                  type: string
+                  maxLength: 256
+                  minLength: 1
+                birth_date:
+                  type: string
+                  pattern: '^\d{2}.\d{2}.\d{4}$'
+                gender:
+                  type: string
+                  enum:
+                    - male
+                    - female
+                relatives:
+                  type: array
+                  items:
+                    type: integer
+                    minimum: 0
+                    uniqueItems: true
+      responses:
+        200:
+          description: Успешно отредактирован
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Citizen'
+        400:
+          description: Ошибка валидации данных
+      x-openapi-router-controller: src.controllers.citizen_controller
+  /imports/{import_id}/citizens:
+    get:
+      tags:
+        - citizen
+      summary: Получение всех граждан из импорта
+      operationId: citizen_list
+      parameters:
+        - name: import_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+
+      responses:
+        200:
+          description: Список граждан
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Citizen'
+        400:
+          description: Ошибка валидации данных
+      x-openapi-router-controller: src.controllers.citizen_controller
+
+  /imports/{import_id}/citizens/birthdays:
+    get:
+      tags:
+        - stats
+      summary: Прогноз продаж подарков
+      operationId: birthday_stat
+      parameters:
+        - name: import_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        200:
+          description: Прогноз по продажам подарков
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        1:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Presents'
+                        2:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Presents'
+                        3:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Presents'
+                        4:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Presents'
+                        5:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Presents'
+                        6:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Presents'
+                        7:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Presents'
+                        8:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Presents'
+                        9:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Presents'
+                        10:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Presents'
+                        11:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Presents'
+                        12:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Presents'
+        400:
+          description: Ошибка валидации данных
+      x-openapi-router-controller: src.controllers.stats_controller
+
+
+  /imports/{import_id}/towns/stat/percentile/age:
+    get:
+      tags:
+        - stats
+      summary: Статистика по городам и возрасту
+      operationId: percentile_stat
+      parameters:
+        - name: import_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        200:
+          description: Статистика по городам и возрасту
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  data:
+                    type: array
+                    items:
+                      additionalProperties: false
+                      type: object
+                      required:
+                        - town
+                        - p50
+                        - p75
+                        - p99
+                      properties:
+                        town:
+                          type: string
+                        p50:
+                          type: number
+                          format: double
+                        p75:
+                          type: number
+                          format: double
+                        p99:
+                          type: number
+                          format: double
+        400:
+          description: Ошибка валидации данных
+      x-openapi-router-controller: src.controllers.stats_controller
+
+components:
+  schemas:
+    Presents:
+      type: object
+      required:
+        - citizen_id
+        - presents
+      properties:
+        citizen_id:
+          type: integer
+        presents:
+          type: integer
+
+    Citizen:
+      type: object
+      required:
+        - citizen_id
+        - town
+        - street
+        - building
+        - apartment
+        - name
+        - birth_date
+        - gender
+        - relatives
+      additionalProperties: false
+      properties:
+        citizen_id:
+          type: integer
+          nullable: false
+          minimum: 0
+        town:
+          type: string
+          nullable: false
+          maxLength: 256
+          minLength: 1
+        street:
+          type: string
+          nullable: false
+          maxLength: 256
+          minLength: 1
+        building:
+          type: string
+          nullable: false
+          maxLength: 256
+          minLength: 1
+        apartment:
+          type: integer
+          nullable: false
+          minimum: 0
+        name:
+          type: string
+          nullable: false
+          maxLength: 256
+          minLength: 1
+        birth_date:
+          type: string
+          nullable: false
+          pattern: '^\d{2}.\d{2}.\d{4}$'
+        gender:
+          type: string
+          nullable: false
+          enum:
+            - male
+            - female
+        relatives:
+          type: array
+          items:
+            type: integer
+            minimum: 0
+            uniqueItems: true
